@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib as plt
 
 class LinearRegression():
     def __init__(self, alpha, iter) -> None:
@@ -26,3 +27,23 @@ class LinearRegression():
     
     def predict(self, X):
         return np.dot(X, self.weights) + self.bias
+    
+    def show_line(self, X, y, y_pred):
+        '''
+        X - From the dataset
+        y - From the dataset
+        y_pred - Returned by the predict function
+        '''
+        plt.scatter( X, y, color = 'blue' ) 
+      
+        plt.plot( X, y_pred, color = 'orange' ) 
+      
+        plt.title( 'Line adjusted to data' ) 
+      
+        plt.xlabel( 'X' ) 
+      
+        plt.ylabel( 'Y' ) 
+      
+        plt.show() 
+
+        return self
