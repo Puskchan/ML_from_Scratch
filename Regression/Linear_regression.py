@@ -20,7 +20,9 @@ class LinearRegression():
 
             self.y_pred = np.dot(X, self.weight) + self.bias
 
-            dw = ((1/n_samples) * np.dot(X.T, self.y_pred - y)) #+ self.regularization.derivation(self.weight)
+            dw = ((1/n_samples) * np.dot(X.T, self.y_pred - y))
+            if self.regularization:
+                dw += self.regularization.derivation(self.weight)
             db = (1/n_samples) * np.sum(self.y_pred-y)
 
             self.weight -= self.alpha * dw
