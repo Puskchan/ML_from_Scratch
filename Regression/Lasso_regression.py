@@ -1,5 +1,5 @@
 from Regression import Linear_regression
-from Regression import Regularization_class
+import Regression as Regularization_class
 
 
 class LassoRegression(Linear_regression.LinearRegression):

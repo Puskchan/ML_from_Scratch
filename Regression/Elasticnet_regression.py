@@ -1,5 +1,5 @@
 from Regression import Linear_regression
-from Regression import Regularization_class
+import Regression as Regularization_class
 
 class ElasticNet_reg(Linear_regression.LinearRegression):
     def __init__(self, ratio, lamda, lr, iter) -> None:
