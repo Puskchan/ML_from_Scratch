@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
+
+
 class AdaBoost():
     def __init__(self, iterations):
         self.weak_classifiers = {}
@@ -14,7 +16,6 @@ class AdaBoost():
     def create_new_data(self, X_train, w):
         indices = []
         u, l = self.upper_lower_range(w)
-        # print(u,l)
         i = 0
 
         while len(indices)<len(w):
@@ -38,18 +39,15 @@ class AdaBoost():
             wc.fit(X_copy, Y_copy)
 
             prediction = wc.predict(X_copy)
-            # print(X_copy, Y_copy)
+            
 
-            # Calculate weighted error based on wrong predictions
             errors = (prediction != Y_copy).astype(int)
             weighted_error = np.dot(w, errors) / np.sum(w)
-            # print('error: ',weighted_error)
+            
 
-            # Compute predictor's weight
             alpha = 0.5 * np.log((1 - weighted_error) / (weighted_error+0.000000000001))
-            # print('a: ', alpha)
+            
 
-            # Update weights
             for i in range(len(Y_copy)):
                 if prediction[i] == Y_copy[i]:
                     w[i] *= np.exp(-alpha)
@@ -57,10 +55,9 @@ class AdaBoost():
                     w[i] *= np.exp(alpha)
             
             w /= np.sum(w)
-            # print('w: ', w)
+            
 
             idx = self.create_new_data(X_copy, w)
-            # print(idx)
             X_copy = 0
             Y_copy = 0      
             X_copy = X_train[idx,:]
