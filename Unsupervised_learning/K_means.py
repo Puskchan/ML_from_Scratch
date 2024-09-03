@@ -3,7 +3,6 @@ import numpy as np
 def eu_dist(x1,x2):
     return np.sqrt(np.sum((x1-x2)**2))
 
-
 class KMeans:
     def __init__(self,k=5,max_iters=100,plot_steps=False):
         self.k = k
@@ -61,5 +60,5 @@ class KMeans:
         return centroids
     
     def _is_converged(self,centroids_old, centroids):
-        distances = [eu_dist((centroids_old[i],centroids[i]) for i in range(self.k))]
+        distances = [eu_dist(centroids_old[i],centroids[i]) for i in range(self.k)]
         return sum(distances) == 0
