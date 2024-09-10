@@ -1,7 +1,6 @@
 import math
 import numpy as np 
 import pandas as pd
-from collections import defaultdict
 
 class XGBoostModel():
     '''XGBoost from Scratch
@@ -137,5 +136,61 @@ class TreeBooster():
         return self.best_score_so_far == 0.
 
     def _find_better_split(self, feature_idx):
-        # Placeholder for method to find the best split
-        pass
+        # Get the feature values for the current feature index
+        x = self.X.values[self.idxs, feature_idx]
+        g,h = self.g[self.idxs], self.h[self.idxs]
+
+
+        # Sort the feature values
+        sort_idx = np.argsort(x)
+        sort_g, sort_h, sort_x = g[sort_idx], h[sort_idx], x[sort_idx]
+
+
+        # Initialize sums for left and right sides
+        sum_g, sum_h = g.sum(), h.sum()
+        sum_g_right, sum_h_right = sum_g, sum_h
+        sum_g_left, sum_h_left = 0., 0.
+
+
+        # Loop through the sorted feature values
+        for i in range(self.n - 1):
+            g_i, h_i, x_i, x_i_next = sort_g[i], sort_h[i], sort_x[i], sort_x[i+1]
+            sum_g_left += g_i
+            sum_g_right -= g_i
+            sum_h_left += h_i
+            sum_h_right -= h_i
+        
+            # Skip invalid splits
+            if sum_h_left < self.min_child_weight or x_i == x_i_next:
+                continue
+            if sum_h_right < self.min_child_weight:
+                break
+            
+            # Calculate gain for the current split
+            gain = 0.5 * (
+                (sum_g_left ** 2 / (sum_h_left + self.reg_lambda))
+                + (sum_g_right ** 2 / (sum_h_right + self.reg_lambda))
+                - (sum_g ** 2 / (sum_h + self.reg_lambda))) - self.gamma / 2
+            
+            # If this is the best split so far, store it
+            if gain > self.best_score_so_far:
+                self.split_feature_idx = feature_idx
+                self.best_score_so_far = gain
+                self.threshold = (x_i + x_i_next) / 2
+    
+
+    def predict(self, X):
+        # Predict for each row in X by calling _predict_row for each row
+        return np.array([self._predict_row(row) for _, row in X.iterrows()])
+
+
+    def _predict_row(self, row):
+        # If the current node is a leaf, return its value
+        if self.is_leaf: 
+            return self.value
+        
+        # Otherwise, decide to go left/right based on spit
+        child = self.left if row[self.split_feature_idx] <= self.threshold else self.right
+        
+        # Recursively call _predict_row on the child node until a leaf is reached
+        return child._predict_row(row)
